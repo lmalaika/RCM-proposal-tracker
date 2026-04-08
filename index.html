@@ -246,7 +246,7 @@ if(d.opps){D=d.opps;ensureFields();}
 if(d.accts)accts=d.accts;
 dataLoaded=true;
 updateStatus("syncing");
-R();
+// Initial render - will be called by onSnapshot
 setTimeout(()=>updateStatus("live"),800);
 }else{
 // First time - seed the database
@@ -262,7 +262,7 @@ updateStatus("error");
 let X={v:"pipeline",sel:null,s:null,ot:"overview",fs:"All",fo:"All",q:"",cm:new Date().getMonth(),cy:new Date().getFullYear(),cf_opp:"All",cf_st:"All",cf_of:"All",cf_dt:"All"};
 function ofs(){return[...new Set(D.map(o=>o.of).filter(Boolean))];}
 
-function R(){document.getElementById("app").innerHTML=sidebar()+right();bindAll();save();}
+function R(){document.getElementById("app").innerHTML=sidebar()+right();bindAll();}
 
 function sidebar(){
 const sorted=accts.slice().sort();const of2=ofs();
@@ -375,15 +375,15 @@ const qi=document.getElementById("qi");if(qi){qi.addEventListener("input",e=>{X.
 document.getElementById("fss")?.addEventListener("change",e=>{X.fs=e.target.value;R();});
 document.getElementById("fos")?.addEventListener("change",e=>{X.fo=e.target.value;R();});
 document.getElementById("addA")?.addEventListener("click",()=>{const n=prompt("Account Name:");if(n&&n.trim()){accts.push(n.trim());X.v="account";X.sel=n.trim();X.s=null;R();}});
-document.getElementById("aAdd")?.addEventListener("click",()=>{const nm=prompt("Opportunity Name:");if(nm&&nm.trim()){D.push({id:uid(),a:X.sel,n:nm.trim(),d:"",tp:"RFP",ct:"Engineering",sc:"",of:"",v:"",pr:"",st:"Opportunity Intake",bi:"New Prospect",pi:"Medium",du:"",up:"",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()});R();}});
-document.getElementById("aRen")?.addEventListener("click",()=>{const old=X.sel;const nw=prompt("Rename:",old);if(nw&&nw.trim()&&nw!==old){const nm=nw.trim();D.forEach(o=>{if(o.a===old)o.a=nm;});const i=accts.indexOf(old);if(i>=0)accts[i]=nm;X.sel=nm;R();}});
-document.getElementById("aDel")?.addEventListener("click",()=>{const a=X.sel;const c=D.filter(o=>o.a===a).length;if(c>0){if(!confirm(`Delete "${a}" and ${c} opportunities?`))return;D=D.filter(o=>o.a!==a);}else if(!confirm(`Delete "${a}"?`))return;accts=accts.filter(x=>x!==a);X.v="pipeline";X.s=null;X.sel=null;R();});
-document.getElementById("dO")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o&&confirm(`Delete "${o.n}"?`)){const a=o.a;D=D.filter(x=>x.id!==X.s);X.s=null;X.v="account";X.sel=a;R();}});
+document.getElementById("aAdd")?.addEventListener("click",()=>{const nm=prompt("Opportunity Name:");if(nm&&nm.trim()){D.push({id:uid(),a:X.sel,n:nm.trim(),d:"",tp:"RFP",ct:"Engineering",sc:"",of:"",v:"",pr:"",st:"Opportunity Intake",bi:"New Prospect",pi:"Medium",du:"",up:"",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()});save();R();}});
+document.getElementById("aRen")?.addEventListener("click",()=>{const old=X.sel;const nw=prompt("Rename:",old);if(nw&&nw.trim()&&nw!==old){const nm=nw.trim();D.forEach(o=>{if(o.a===old)o.a=nm;});const i=accts.indexOf(old);if(i>=0)accts[i]=nm;X.sel=nm;save();R();}});
+document.getElementById("aDel")?.addEventListener("click",()=>{const a=X.sel;const c=D.filter(o=>o.a===a).length;if(c>0){if(!confirm(`Delete "${a}" and ${c} opportunities?`))return;D=D.filter(o=>o.a!==a);}else if(!confirm(`Delete "${a}"?`))return;accts=accts.filter(x=>x!==a);X.v="pipeline";X.s=null;X.sel=null;save();R();});
+document.getElementById("dO")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o&&confirm(`Delete "${o.n}"?`)){const a=o.a;D=D.filter(x=>x.id!==X.s);X.s=null;X.v="account";X.sel=a;save();R();}});
 document.querySelectorAll("[data-tb]").forEach(x=>x.addEventListener("click",()=>{X.ot=x.dataset.tb;R();}));
 document.querySelectorAll("[data-f]").forEach(el=>{const fn=()=>{const o=D.find(x=>x.id===X.s);if(!o)return;const k=el.dataset.f;if(k.startsWith("kd.")){if(!o.kd)o.kd={};o.kd[k.split(".")[1]]=el.value;}else o[k]=el.value;save();};el.addEventListener("change",fn);el.addEventListener("input",fn);});
 document.querySelectorAll("[data-sd]").forEach(el=>{el.addEventListener("change",()=>{const o=D.find(x=>x.id===X.s);if(!o)return;if(!o.sd)o.sd=mkSD();if(!o.sd[el.dataset.sd])o.sd[el.dataset.sd]={start:"",due:"",done:""};o.sd[el.dataset.sd][el.dataset.sdf]=el.value;save();});});
-document.getElementById("at")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o){const nm=prompt("Task name:");if(nm){o.tk.push({i:"t"+Date.now(),n:nm,o:"",r:"Opportunity Intake",d:"",s:"Not Started"});R();}}});
-document.querySelectorAll("[data-dt]").forEach(x=>x.addEventListener("click",()=>{const o=D.find(x2=>x2.id===X.s);if(o){o.tk=o.tk.filter(t=>t.i!==x.dataset.dt);R();}}));
+document.getElementById("at")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o){const nm=prompt("Task name:");if(nm){o.tk.push({i:"t"+Date.now(),n:nm,o:"",r:"Opportunity Intake",d:"",s:"Not Started"});save();R();}}});
+document.querySelectorAll("[data-dt]").forEach(x=>x.addEventListener("click",()=>{const o=D.find(x2=>x2.id===X.s);if(o){o.tk=o.tk.filter(t=>t.i!==x.dataset.dt);save();R();}}));
 document.getElementById("cP")?.addEventListener("click",()=>{X.cm--;if(X.cm<0){X.cm=11;X.cy--;}R();});
 document.getElementById("cN")?.addEventListener("click",()=>{X.cm++;if(X.cm>11){X.cm=0;X.cy++;}R();});
 document.getElementById("cT")?.addEventListener("click",()=>{X.cm=new Date().getMonth();X.cy=new Date().getFullYear();R();});
@@ -394,6 +394,6 @@ document.getElementById("cf_d")?.addEventListener("change",e=>{X.cf_dt=e.target.
 document.querySelectorAll(".cal-e[data-so]").forEach(x=>x.addEventListener("click",ev=>{ev.stopPropagation();X.s=x.dataset.so;R();}));
 document.getElementById("rst")?.addEventListener("click",()=>{if(confirm("Reset all data? Cannot be undone.")){D=JSON.parse(JSON.stringify(SEED));accts=[...new Set(SEED.map(o=>o.a))];X={v:"pipeline",sel:null,s:null,ot:"overview",fs:"All",fo:"All",q:"",cm:new Date().getMonth(),cy:new Date().getFullYear(),cf_opp:"All",cf_st:"All",cf_of:"All",cf_dt:"All"};doSave();R();}});
 }
-R();
+R(); // Initial render with seed data, onSnapshot will update
 
 </script></body></html>
