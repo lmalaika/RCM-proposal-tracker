@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RCM Energy Services — Proposal Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--bg:#f5f6f8;--surface:#fff;--surface2:#f9fafb;--bdr:#e3e7ed;--bdr2:#eef1f5;
+--t1:#1a2636;--t2:#5a6778;--t3:#97a2b0;
+--blue:#4a8fd9;--blue2:#3b7ec4;--blue3:#3570b0;--bluebg:#edf4fc;
+--red:#dc5050;--redbg:#fceaea;--amber:#cc8e0a;--green:#27946a;--greenbg:#e7f5ef;
+--purple:#7556bd;--teal:#1a938a;--pink:#bf3d63;--gray:#8c96a5;
+--sh:0 1px 4px rgba(0,0,0,.05);--sh2:0 3px 12px rgba(0,0,0,.07);--r:10px;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;}
+.app{display:flex;height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cdd3dc;border-radius:3px;}
+
+/* Sidebar */
+.sb{width:270px;min-width:270px;background:#fff;border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+.sb-logo{padding:20px 22px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;}
+.sb-logo img{height:30px;}.sb-logo span{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:-.2px;}
+.sb-flt{padding:10px 14px;border-bottom:1px solid var(--bdr);}
+.sb-flt input,.sb-flt select{width:100%;padding:7px 11px;border-radius:7px;border:1px solid var(--bdr);background:var(--surface2);color:var(--t1);font:12px 'DM Sans',sans-serif;margin-bottom:5px;outline:none;transition:border .2s;}
+.sb-flt input:focus,.sb-flt select:focus{border-color:var(--blue);}
+.fr{display:flex;gap:4px;}.fr select{flex:1;font-size:11px;padding:5px 6px;}
+.sb-list{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px;}
+.sb-foot{padding:8px 14px;border-top:1px solid var(--bdr);}
+.sb-foot button{font:500 10px 'DM Sans',sans-serif;color:var(--t3);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:4px;transition:.12s;}
+.sb-foot button:hover{color:var(--red);background:var(--redbg);}
+
+/* Sidebar tabs */
+.st{display:flex;align-items:center;gap:9px;padding:10px 16px;width:100%;background:var(--blue);border:none;border-radius:8px;color:#fff;cursor:pointer;font:600 13px/1 'DM Sans',sans-serif;text-align:left;transition:all .15s;box-shadow:0 2px 6px rgba(74,143,217,.2);}
+.st:hover{background:var(--blue2);}
+.st.on{background:var(--blue3);box-shadow:0 2px 10px rgba(74,143,217,.35);transform:scale(1.01);}
+.st-icon{width:20px;text-align:center;font-size:13px;flex-shrink:0;opacity:.85;}
+.st-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.st-count{font-size:10px;font-weight:700;background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;}
+
+.sb-section{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:12px 6px 6px;display:flex;align-items:center;justify-content:space-between;}
+.sb-section button{background:none;border:none;color:var(--blue);cursor:pointer;font:600 11px 'DM Sans',sans-serif;padding:2px 8px;border-radius:4px;transition:.12s;}
+.sb-section button:hover{background:var(--bluebg);}
+
+/* Right panel */
+.mn{flex:1;overflow-y:auto;background:var(--bg);}
+.pad{padding:28px 32px;max-width:1300px;}
+.bd2{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;letter-spacing:.2px;white-space:nowrap;}
+
+/* Metrics */
+.mr{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.mc{background:var(--surface);border-radius:var(--r);padding:18px 22px;border:1px solid var(--bdr);flex:1;min-width:150;box-shadow:var(--sh);}
+.ml{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;}
+.mv{font-size:30px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-1px;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.cc2{background:var(--surface);border-radius:var(--r);padding:20px;border:1px solid var(--bdr);box-shadow:var(--sh);}
+.ct2{font-size:13px;font-weight:700;margin-bottom:14px;}
+.br{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.bl2{font-size:11px;color:var(--t2);width:128px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bt{flex:1;height:16px;background:var(--surface2);border-radius:4px;overflow:hidden;border:1px solid var(--bdr2);}
+.bf{height:100%;border-radius:3px;transition:width .6s ease;}
+.bv{font-size:12px;font-weight:700;width:24px;text-align:right;font-family:'JetBrains Mono',monospace;}
+.tw{background:var(--surface);border-radius:var(--r);border:1px solid var(--bdr);overflow:hidden;box-shadow:var(--sh);}
+.thb{padding:14px 18px;border-bottom:1px solid var(--bdr);font-size:14px;font-weight:700;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;border-bottom:2px solid var(--bdr);font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;text-align:left;background:var(--surface2);}
+td{padding:10px 14px;border-bottom:1px solid var(--bdr2);font-size:13px;vertical-align:middle;}
+tr.ck{cursor:pointer;transition:.12s;}tr.ck:hover{background:var(--bluebg);}
+
+/* Account view */
+.ah{padding:22px 32px;background:linear-gradient(135deg,#4a8fd9 0%,#3570b0 100%);color:#fff;}
+.ah-t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:2px;}
+.ah-s{font-size:13px;opacity:.8;}
+.ah-a{display:flex;gap:8px;margin-top:10px;}
+.ah-a button{padding:6px 14px;border-radius:7px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;transition:.15s;border:none;}
+.abA{background:rgba(255,255,255,.2);color:#fff;}.abA:hover{background:rgba(255,255,255,.35);}
+.abR{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);}.abR:hover{background:rgba(255,255,255,.25);}
+.abD{background:rgba(220,80,80,.15);color:rgba(255,200,200,.9);}.abD:hover{background:rgba(220,80,80,.35);}
+.oc{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;padding:20px 32px;}
+.ocd{background:var(--surface);border-radius:var(--r);padding:18px;border:1px solid var(--bdr);box-shadow:var(--sh);cursor:pointer;transition:all .15s;}
+.ocd:hover{border-color:var(--blue);box-shadow:var(--sh2);transform:translateY(-1px);}
+.ocd-n{font-size:15px;font-weight:700;margin-bottom:6px;}
+.ocd-d{font-size:12px;color:var(--t2);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ocd-m{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.ocd-r{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--t2);margin-top:6px;padding-top:6px;border-top:1px solid var(--bdr2);gap:8px;flex-wrap:wrap;}
+.ocd-r strong{color:var(--t1);}
+.em2{text-align:center;color:var(--t3);padding:60px 32px;font-size:14px;}
+
+/* Calendar */
+.cal-f{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.cal-f select{padding:7px 11px;border-radius:7px;border:1px solid var(--bdr);background:var(--surface);color:var(--t1);font:12px 'DM Sans',sans-serif;outline:none;}
+.cal-n{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.cal-n button{background:var(--surface);border:1px solid var(--bdr);border-radius:7px;padding:6px 14px;cursor:pointer;font:600 13px 'DM Sans',sans-serif;color:var(--t1);transition:.12s;}
+.cal-n button:hover{background:var(--bluebg);border-color:var(--blue);}
+.cal-m{font-size:18px;font-weight:800;min-width:200px;text-align:center;}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;background:var(--surface);box-shadow:var(--sh);}
+.cal-h{padding:10px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;background:var(--surface2);border-bottom:1px solid var(--bdr);}
+.cal-d{min-height:90px;padding:4px 5px;border-right:1px solid var(--bdr2);border-bottom:1px solid var(--bdr2);}
+.cal-d.ot{background:var(--surface2);opacity:.4;}.cal-d.td{background:var(--bluebg);}
+.cal-dn{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:3px;}.cal-d.td .cal-dn{color:var(--blue);font-weight:800;}
+.cal-e{font-size:9px;padding:2px 4px;border-radius:3px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-weight:600;}.cal-e:hover{opacity:.8;}
+
+/* Detail */
+.dh{padding:16px 28px 0;background:var(--surface);border-bottom:1px solid var(--bdr);}
+.bcr{font-size:12px;color:var(--t3);margin-bottom:6px;}.bcr a{color:var(--blue);cursor:pointer;text-decoration:none;font-weight:600;}.bcr a:hover{text-decoration:underline;}
+.dtr{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.dtt{font-size:22px;font-weight:800;letter-spacing:-.4px;}
+.del-opp{background:none;border:1px solid var(--red);color:var(--red);padding:4px 12px;border-radius:6px;font:600 11px 'DM Sans',sans-serif;cursor:pointer;margin-left:auto;transition:.12s;}.del-opp:hover{background:var(--redbg);}
+.sbar{display:flex;gap:3px;margin:10px 0 14px;}
+.sst{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.str2{width:100%;height:5px;border-radius:3px;}.sl2{font-size:8px;color:var(--t3);text-align:center;line-height:1.2;}.sl2.on{color:var(--t1);font-weight:700;}
+.tbs{display:flex;gap:0;}
+.tbn{padding:10px 18px;background:none;border:none;border-bottom:2px solid transparent;color:var(--t3);cursor:pointer;font:600 13px/1 'DM Sans',sans-serif;text-transform:capitalize;transition:.15s;}
+.tbn:hover{color:var(--t1);}.tbn.on{border-bottom-color:var(--blue);color:var(--blue);}
+.dbd{padding:24px 28px;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.crd{background:var(--surface);border-radius:var(--r);padding:22px;border:1px solid var(--bdr);box-shadow:var(--sh);}
+.cdt{font-size:14px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--bdr2);}
+.fi{margin-bottom:14px;}.flb{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fi input,.fi select,.fi textarea{width:100%;padding:8px 12px;border-radius:7px;border:1px solid var(--bdr);background:var(--surface);color:var(--t1);font:13px 'DM Sans',sans-serif;outline:none;transition:border .2s,box-shadow .2s;}
+.fi input[type=date]{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.fi textarea{resize:vertical;line-height:1.6;}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--bluebg);}
+.fp{display:grid;grid-template-columns:1fr 1fr;gap:12px;}.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}.fw{grid-column:1/-1;}
+.gt{background:var(--surface);border-radius:8px;border:1px solid var(--bdr);padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:14px;transition:.2s;}
+.gt.cur{border:2px solid var(--blue);background:var(--bluebg);box-shadow:0 2px 12px rgba(74,143,217,.1);}.gt.pst{opacity:.45;}
+.gn2{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.gnm{font-size:14px;font-weight:700;}.gsu{font-size:11px;color:var(--t3);margin-top:1px;}
+.tkb{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.ba{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--blue);color:#fff;border:none;border-radius:8px;font:600 13px 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(74,143,217,.25);transition:.15s;}.ba:hover{background:var(--blue2);}
+.bsm{background:none;border:none;color:var(--t3);cursor:pointer;padding:4px 6px;border-radius:5px;font-size:14px;transition:.12s;}.bsm:hover{color:var(--red);background:var(--redbg);}
+.sd-t{width:100%;border-collapse:collapse;}
+.sd-t th{padding:8px 10px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:left;background:var(--surface2);border-bottom:2px solid var(--bdr);}
+.sd-t td{padding:6px 10px;border-bottom:1px solid var(--bdr2);}
+.sd-t td input[type=date]{width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--bdr);font:12px 'JetBrains Mono',monospace;color:var(--t1);outline:none;background:var(--surface);}.sd-t td input[type=date]:focus{border-color:var(--blue);}
+.sd-s{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;}.sd-d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCDH0V6dKi6xxiaDM-v2p-bQqjfFQddBFI",
+  authDomain: "rcm-tracker.firebaseapp.com",
+  projectId: "rcm-tracker",
+  storageBucket: "rcm-tracker.firebasestorage.app",
+  messagingSenderId: "828023174743",
+  appId: "1:828023174743:web:b160ae8a7d873baf561512"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db2 = getFirestore(fbApp);
+const DOC_REF = doc(db2, "proposal_tracker_data", "main");
+let saving=false,lastSaveTime=0;
+
+const L='data:image/jpeg;base64,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ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAAABEQIRAD8A9VooooAKKKKACiiigAooooAKKKKACiiigBksaTRtFINyOMEVnQX8llfLpOotkygmzuW480DrG3bzB+o561qVn65pSavp72udkq4kgkHBSVeVYHt6H2rSi4X5KnwS69YvpJenVdV8iKilbmh8UenRrt/k+jNCisPwtrj6rbPa3vyX9m3l3CHgnBxvx9Rg+9blKtSlQnKnNe9F/J9mvJrVDp1I1Yqcdn/Vn5oKKKKgoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA4bxGz+GvFNvrcAIhu1/fqOjYwso/LBHvXbxyJLGssZDI6hlYdCCMg1znj+zFxoJuAPmtZkkz3wx8sj/AMeFO8B6ib3Q1gc5ks3MPvs+8h/I4/CvQrx+sYGjiPt0Zeym/wC6tYv5JpfM5KUvZYqpR+zUXPH1+19+50dFFFeedYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRWRrXizw74ekSHWL1LaSQbljw8j46biqK5A46mgDXoqvY39nqdrHe6fMlxbyjKSRncp7H8c9RVigAooooAKKKKACiiszxBrkPh/TjfSRtPI8iQW1vH/rJppDiONevU/pQBp0VwR1/xWbvyH1XSLe/80RjS3jmKCRgGWFptw+cgjp36V0OieKrPUrR2vwunXttM9vd2szrlJUxuweNykMCDQB47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';
+const ST=["Opportunity Intake","Technical Review","Go / No-Go","Kickoff","Proposal Development","Internal Review","Proposal Approval","Submission","Closeout"];
+const SC={"Opportunity Intake":"#4a8fd9","Technical Review":"#7556bd","Go / No-Go":"#cc8e0a","Kickoff":"#1a938a","Proposal Development":"#27946a","Internal Review":"#5c6cf1","Proposal Approval":"#bf3d63","Submission":"#1a938a","Closeout":"#97a2b0"};
+const BC={"Proposal":"#4a8fd9","New Prospect":"#cc8e0a","Negotiation":"#7556bd","Submitted":"#27946a","Won":"#1a7a52","Lost":"#dc5050"};
+const PC={High:"#dc5050",Medium:"#cc8e0a",Low:"#97a2b0"};
+const MO=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DY=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function mkSD(){const s={};ST.forEach(x=>{s[x]={start:"",due:"",done:""}});return s;}
+function uid(){return"o"+Date.now()+Math.random().toString(36).slice(2,6);}
+function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
+function bg(t,c){return`<span class="bd2" style="background:${c}12;color:${c};border:1px solid ${c}25">${t}</span>`;}
+
+const SEED=[
+{id:"o1",a:"Eversource",n:"Station 483",d:"",tp:"Estimate",ct:"Engineering",sc:"Station Engineering",of:"Oakland",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"April 10",up:"offer letter drafted, Joe drafting cost calc",pm:"Jami",tl:"",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-10",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o2",a:"Siemens Industry",n:"Green Hydrogen Microgrid",d:"Green Hydrogen Microgrid",tp:"RFP",ct:"Engineering",sc:"Microgrid",of:"Oakland",v:"",pr:"",st:"Opportunity Intake",bi:"New Prospect",pi:"Medium",du:"April 10",up:"Bumped to April 10, set up technical meeting",pm:"Jami",tl:"Kevin Kline",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-10",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o3",a:"Eversource",n:"Station 33",d:"GIS station and civil scope",tp:"RFP",ct:"Engineering",sc:"Station Engineering",of:"Oakland",v:"",pr:"",st:"Submission",bi:"Negotiation",pi:"High",du:"",up:"Complete. Eversource confirmed receipt.",pm:"Jami",tl:"",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o4",a:"Bechtel",n:"SRSP 500kV",d:"500kV GIS Substation",tp:"RFP",ct:"EPC",sc:"Substation",of:"Oakland",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"April 10",up:"due April 10",pm:"Jami",tl:"",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-10",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o5",a:"AEP",n:"Beale Phase II",d:"Phase II Beale Proposal",tp:"RFP",ct:"EPC",sc:"Substation",of:"EPC",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"April 3",up:"due March 27",pm:"Jami",tl:"",gm:"Hans",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-03",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o6",a:"Bechtel",n:"South Spur",d:"substation and tie line on solar site",tp:"Budgetary",ct:"EPC",sc:"Substation",of:"",v:"",pr:"",st:"Technical Review",bi:"Proposal",pi:"Medium",du:"Jan 27",up:"GA next week, pending 30% Engineering.",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o7",a:"Bechtel",n:"Goldfinch",d:"substation and tie line on solar site",tp:"Budgetary",ct:"EPC",sc:"Substation",of:"EPC",v:"",pr:"50%",st:"Technical Review",bi:"Proposal",pi:"Medium",du:"Jan 27",up:"GA next week, pending 30% Engineering.",pm:"Jami",tl:"",gm:"Hans",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o8",a:"Siemens Energy",n:"Lake Charles",d:"84HI-747 Lake Charles LNG 69kV P&C",tp:"RFP",ct:"Engineering",sc:"P&C Engineering",of:"Mississauga",v:"",pr:"",st:"Submission",bi:"Proposal",pi:"Medium",du:"",up:"Submitted",pm:"Jami",tl:"",gm:"Rimer",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o9",a:"Siemens Industry",n:"Paragon Microgrid",d:"Paragon Microgrid",tp:"RFP",ct:"Engineering",sc:"Microgrid",of:"Oakland",v:"$500,000",pr:"",st:"Submission",bi:"Submitted",pi:"Medium",du:"March 23",up:"Submitted bafo 4/20",pm:"Jami",tl:"Kevin Kline",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-03-23",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o10",a:"National Grid",n:"RFG368-Holtsville",d:"LNG MSA Liquefaction Refurbishment",tp:"RFP",ct:"Engineering",sc:"LNG",of:"Oakland",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"April 10",up:"",pm:"Jami",tl:"",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-10",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o11",a:"Hitachi",n:"Hitachi Quals",d:"Round 2 - submit PM samples",tp:"RFQ",ct:"Engineering",sc:"Qualification",of:"",v:"",pr:"",st:"Opportunity Intake",bi:"New Prospect",pi:"Medium",du:"Jan 20",up:"",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o12",a:"Eversource",n:"Station 385",d:"XLPE, station and civil",tp:"RFP",ct:"Engineering",sc:"Station Engineering",of:"",v:"",pr:"",st:"Opportunity Intake",bi:"Proposal",pi:"Medium",du:"",up:"Jami requested meeting",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o13",a:"Power Pro",n:"DC Block BESS",d:"DC Block BESS",tp:"RFP",ct:"Engineering",sc:"BESS",of:"Mississauga",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"April 17",up:"",pm:"Jami",tl:"",gm:"Rimer",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-04-17",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o14",a:"HICO",n:"Atlas GIS Substation",d:"Atlas GIS Substation",tp:"RFP",ct:"Engineering",sc:"Substation",of:"Oakland",v:"$1,000,000",pr:"",st:"Proposal Development",bi:"Proposal",pi:"High",du:"March 31",up:"",pm:"Jami",tl:"",gm:"Adam Addesso",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-03-31",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o15",a:"Siemens Industry",n:"Towerview",d:"Change Order - SIB design & install",tp:"Estimate",ct:"Engineering",sc:"Substation",of:"",v:"",pr:"",st:"Proposal Development",bi:"New Prospect",pi:"Medium",du:"March 20",up:"On track for pricing.",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"2026-03-20",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o16",a:"Siemens Industry",n:"Old Limb",d:"Dominion Old Limb GIS substation",tp:"RFP",ct:"Engineering",sc:"Substation",of:"",v:"",pr:"",st:"Proposal Development",bi:"New Prospect",pi:"Medium",du:"Jan 12",up:"On track on vendor pricing.",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()},
+{id:"o17",a:"Bechtel",n:"Padre Solar (Copano)",d:"substation and tie line on solar site",tp:"RFP",ct:"EPC",sc:"Substation",of:"",v:"",pr:"",st:"Proposal Development",bi:"Proposal",pi:"Medium",du:"",up:"On track, tech proposal Dec 23.",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()}
+];
+
+let D=JSON.parse(JSON.stringify(SEED));
+let accts=[...new Set(SEED.map(o=>o.a))];
+let dataLoaded=false;
+
+function ensureFields(){
+D.forEach(o=>{if(!o.kd)o.kd={pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""};if(!o.sd)o.sd=mkSD();ST.forEach(st=>{if(!o.sd[st])o.sd[st]={start:"",due:"",done:""}});if(!o.tk)o.tk=[];});
+}
+
+function save(){
+if(!dataLoaded&&D.length===SEED.length)return;
+const now=Date.now();
+if(now-lastSaveTime<500){if(!saving){saving=true;setTimeout(()=>{saving=false;doSave();},500);}return;}
+doSave();
+}
+function doSave(){
+lastSaveTime=Date.now();
+setDoc(DOC_REF,{opps:JSON.parse(JSON.stringify(D)),accts:JSON.parse(JSON.stringify(accts)),updated:Date.now()}).catch(e=>console.error("Save error:",e));
+}
+
+// Listen for real-time updates from Firebase
+onSnapshot(DOC_REF,(snap)=>{
+if(snap.exists()){
+const d=snap.data();
+if(d.opps){D=d.opps;ensureFields();}
+if(d.accts)accts=d.accts;
+dataLoaded=true;
+R();
+}else{
+// First time - seed the database
+dataLoaded=true;
+doSave();
+}
+});
+
+let X={v:"pipeline",sel:null,s:null,ot:"overview",fs:"All",fo:"All",q:"",cm:new Date().getMonth(),cy:new Date().getFullYear(),cf_opp:"All",cf_st:"All",cf_of:"All",cf_dt:"All"};
+function ofs(){return[...new Set(D.map(o=>o.of).filter(Boolean))];}
+
+function R(){document.getElementById("app").innerHTML=sidebar()+right();bindAll();save();}
+
+function sidebar(){
+const sorted=accts.slice().sort();const of2=ofs();
+let tabs="";
+// System tabs
+tabs+=`<button class="st ${X.v==="pipeline"&&!X.s?"on":""}" data-sv="pipeline"><span class="st-icon">&#9638;</span><span class="st-label">Pipeline</span></button>`;
+tabs+=`<button class="st ${X.v==="calendar"&&!X.s?"on":""}" data-sv="calendar"><span class="st-icon">&#128197;</span><span class="st-label">Calendar</span></button>`;
+// Section header
+tabs+=`<div class="sb-section"><span>Accounts</span><button id="addA">+ Add</button></div>`;
+// Account tabs
+sorted.forEach(a=>{
+const cnt=D.filter(o=>o.a===a).length;
+const isOn=X.v==="account"&&X.sel===a&&!X.s;
+tabs+=`<button class="st ${isOn?"on":""}" data-sa="${esc(a)}"><span class="st-icon" style="font-size:11px">&#9632;</span><span class="st-label">${a}</span><span class="st-count">${cnt}</span></button>`;
+});
+
+return`<div class="sb">
+<div class="sb-logo"><img src="${L}" alt="RCM"><span>Energy Services</span></div>
+<div class="sb-flt"><input type="text" placeholder="Search..." id="qi" value="${esc(X.q)}"><div class="fr"><select id="fss"><option value="All">All Stages</option>${ST.map(s=>`<option value="${s}"${X.fs===s?" selected":""}>${s}</option>`).join("")}</select><select id="fos"><option value="All">All Offices</option>${of2.map(o=>`<option value="${o}"${X.fo===o?" selected":""}>${o}</option>`).join("")}</select></div></div>
+<div class="sb-list">${tabs}</div>
+<div class="sb-foot"><button id="rst">&#8635; Reset Data</button></div></div>`;
+}
+
+function right(){
+if(X.s)return detailP();
+if(X.v==="pipeline")return`<div class="mn"><div class="pad">${pipeV()}</div></div>`;
+if(X.v==="calendar")return`<div class="mn"><div class="pad">${calV()}</div></div>`;
+if(X.v==="account"&&X.sel)return`<div class="mn">${acctV(X.sel)}</div>`;
+return`<div class="mn"><div class="pad">${pipeV()}</div></div>`;
+}
+
+function pipeV(){
+let t=D.length,hp=0,gn=0,tv=0;const bs={},ba={},bo={},bb={};
+D.forEach(o=>{bs[o.st]=(bs[o.st]||0)+1;ba[o.a]=(ba[o.a]||0)+1;bo[o.of||"Unassigned"]=(bo[o.of||"Unassigned"]||0)+1;bb[o.bi]=(bb[o.bi]||0)+1;if(o.st==="Go / No-Go")gn++;if(o.pi==="High")hp++;if(o.v){const x=parseFloat(o.v.replace(/[$,]/g,""));if(!isNaN(x))tv+=x;}});
+const vs=tv>0?`$${(tv/1000).toFixed(0)}K`:"—";
+let rows="";[...D].sort((a,c)=>({High:0,Medium:1,Low:2}[a.pi]||1)-({High:0,Medium:1,Low:2}[c.pi]||1)).forEach(o=>{rows+=`<tr class="ck" data-so="${o.id}"><td><strong>${o.a}</strong></td><td>${o.n}</td><td>${bg(o.st,SC[o.st]||"#97a2b0")}</td><td>${bg(o.bi,BC[o.bi]||"#97a2b0")}</td><td style="color:var(--t2)">${o.of||"—"}</td><td style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.du||"—"}</td><td>${bg(o.pi,PC[o.pi]||"#97a2b0")}</td><td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2)">${o.v||"—"}</td></tr>`;});
+return`<h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px">Proposal Pipeline Dashboard</h2><p style="font-size:13px;color:var(--t2);margin-bottom:22px">RCM Energy Services — Active Proposal Pipeline</p>
+<div class="mr">${mcd("Active Opportunities",t,"var(--blue)")}${mcd("High Priority",hp,"var(--red)")}${mcd("Pending Go/No-Go",gn,"var(--amber)")}${mcd("Pipeline Value",vs,"var(--green)")}</div>
+<div class="cg">${bch("By Stage",bs,SC)}${bch("By Account",ba)}${bch("By Office",bo)}${bch("By Bid Status",bb,BC)}</div>
+<div class="tw"><div class="thb">All Active Opportunities</div><div style="overflow-x:auto"><table><thead><tr>${["Account","Opportunity","Stage","Bid Status","Office","Due","Priority","Value"].map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+function mcd(l,v,c){return`<div class="mc"><div class="ml">${l}</div><div class="mv" style="color:${c}">${v}</div></div>`;}
+function bch(t,d,cm){const mx=Math.max(...Object.values(d),1);let r="";Object.entries(d).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const c=(cm&&cm[k])||"var(--blue)";r+=`<div class="br"><span class="bl2">${k}</span><div class="bt"><div class="bf" style="width:${(v/mx)*100}%;background:${c}"></div></div><span class="bv">${v}</span></div>`;});return`<div class="cc2"><div class="ct2">${t}</div>${r}</div>`;}
+
+function calV(){
+const y=X.cy,m=X.cm,first=new Date(y,m,1),last=new Date(y,m+1,0),sd2=first.getDay(),td2=last.getDate();
+const today=new Date(),ts=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+let evts=[];
+D.forEach(o=>{if(X.cf_opp!=="All"&&o.n!==X.cf_opp)return;if(X.cf_of!=="All"&&o.of!==X.cf_of)return;
+if(o.kd.pDue)evts.push({d:o.kd.pDue,n:o.n,s:"Due",c:SC["Submission"],id:o.id});
+if(o.kd.gng)evts.push({d:o.kd.gng,n:o.n,s:"G/NG",c:SC["Go / No-Go"],id:o.id});
+if(o.kd.kick)evts.push({d:o.kd.kick,n:o.n,s:"Kick",c:SC["Kickoff"],id:o.id});
+if(o.kd.subm)evts.push({d:o.kd.subm,n:o.n,s:"Sub",c:SC["Submission"],id:o.id});
+ST.forEach(st=>{if(X.cf_st!=="All"&&st!==X.cf_st)return;const sd=o.sd[st];if(!sd)return;
+if(sd.start&&(X.cf_dt==="All"||X.cf_dt==="start"))evts.push({d:sd.start,n:o.n,s:st.slice(0,8),c:SC[st],id:o.id});
+if(sd.due&&(X.cf_dt==="All"||X.cf_dt==="due"))evts.push({d:sd.due,n:o.n,s:st.slice(0,8),c:SC[st],id:o.id});
+if(sd.done&&(X.cf_dt==="All"||X.cf_dt==="done"))evts.push({d:sd.done,n:o.n,s:st.slice(0,8)+"✓",c:SC[st],id:o.id});});});
+const eM={};evts.forEach(e=>{(eM[e.d]=eM[e.d]||[]).push(e);});
+let hd=DY.map(d=>`<div class="cal-h">${d}</div>`).join(""),cl="";
+const pm=new Date(y,m,0);for(let i=sd2-1;i>=0;i--)cl+=`<div class="cal-d ot"><div class="cal-dn">${pm.getDate()-i}</div></div>`;
+for(let d=1;d<=td2;d++){const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;let ev="";
+if(eM[ds])eM[ds].slice(0,4).forEach(e=>{ev+=`<span class="cal-e" data-so="${e.id}" style="background:${e.c}18;color:${e.c};border-left:2px solid ${e.c}" title="${e.n}: ${e.s}">${e.n.length>12?e.n.slice(0,12)+"…":e.n}</span>`;});
+if(eM[ds]&&eM[ds].length>4)ev+=`<span style="font-size:9px;color:var(--t3)">+${eM[ds].length-4}</span>`;
+cl+=`<div class="cal-d ${ds===ts?"td":""}"><div class="cal-dn">${d}</div>${ev}</div>`;}
+const rem=(sd2+td2)%7;if(rem>0)for(let i=1;i<=7-rem;i++)cl+=`<div class="cal-d ot"><div class="cal-dn">${i}</div></div>`;
+const on=[...new Set(D.map(o=>o.n))].sort(),of2=ofs();
+return`<h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px">Calendar View</h2><p style="font-size:13px;color:var(--t2);margin-bottom:22px">Stage dates and key milestones</p>
+<div class="cal-f"><select id="cf_o"><option value="All">All Opportunities</option>${on.map(n=>`<option value="${esc(n)}"${X.cf_opp===n?" selected":""}>${n}</option>`).join("")}</select><select id="cf_s"><option value="All">All Stages</option>${ST.map(s=>`<option value="${s}"${X.cf_st===s?" selected":""}>${s}</option>`).join("")}</select><select id="cf_f"><option value="All">All Offices</option>${of2.map(o=>`<option value="${o}"${X.cf_of===o?" selected":""}>${o}</option>`).join("")}</select><select id="cf_d"><option value="All">All Dates</option><option value="due"${X.cf_dt==="due"?" selected":""}>Due</option><option value="start"${X.cf_dt==="start"?" selected":""}>Start</option><option value="done"${X.cf_dt==="done"?" selected":""}>Done</option></select></div>
+<div class="cal-n"><button id="cP">&#9664;</button><div class="cal-m">${MO[m]} ${y}</div><button id="cN">&#9654;</button><button id="cT" style="margin-left:8px">Today</button></div><div class="cal-g">${hd}${cl}</div>`;
+}
+
+function acctV(name){
+const fq=X.q.toLowerCase();
+let ol=D.filter(o=>o.a===name&&(X.fs==="All"||o.st===X.fs)&&(X.fo==="All"||o.of===X.fo)&&(!fq||(o.n+o.d).toLowerCase().includes(fq)));
+let cards="";
+if(!ol.length)cards=`<div class="em2">No opportunities found. Click "+ Add Opportunity" to create one.</div>`;
+else ol.sort((a,c)=>({High:0,Medium:1,Low:2}[a.pi]||1)-({High:0,Medium:1,Low:2}[c.pi]||1)).forEach(o=>{
+cards+=`<div class="ocd" data-so="${o.id}"><div class="ocd-n">${o.n}</div><div class="ocd-d">${o.d||o.sc||"No details"}</div><div class="ocd-m">${bg(o.st,SC[o.st]||"#97a2b0")} ${bg(o.bi,BC[o.bi]||"#97a2b0")} ${bg(o.pi,PC[o.pi]||"#97a2b0")}</div><div class="ocd-r"><span>Office: <strong>${o.of||"Unassigned"}</strong></span><span>Due: <strong style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.du||"—"}</strong></span>${o.v?`<span>Value: <strong style="font-family:'JetBrains Mono',monospace;font-size:12px">${o.v}</strong></span>`:""}</div></div>`;});
+const total=D.filter(o=>o.a===name).length;
+return`<div class="ah"><div class="ah-t">${name}</div><div class="ah-s">${total} opportunit${total===1?"y":"ies"}</div>
+<div class="ah-a"><button class="abA" id="aAdd">+ Add Opportunity</button><button class="abR" id="aRen">Rename</button><button class="abD" id="aDel">Delete Account</button></div></div><div class="oc">${cards}</div>`;
+}
+
+function detailP(){
+const o=D.find(x=>x.id===X.s);if(!o)return`<div class="mn" style="display:flex;align-items:center;justify-content:center;color:var(--t3)">Select an opportunity</div>`;
+const si=ST.indexOf(o.st);let sb="";ST.forEach((s,i)=>{sb+=`<div class="sst"><div class="str2" style="background:${i<=si?SC[s]||"#97a2b0":"var(--bdr)"}"></div><span class="sl2 ${i===si?"on":""}">${s}</span></div>`;});
+const tabs=["overview","workflow","tasks","notes"];let tb=tabs.map(t=>`<button class="tbn ${X.ot===t?"on":""}" data-tb="${t}">${t}</button>`).join("");
+let c="";if(X.ot==="overview")c=ovw(o);else if(X.ot==="workflow")c=wfl(o);else if(X.ot==="tasks")c=tsk(o);else c=nts(o);
+return`<div class="mn"><div class="dh"><div class="bcr"><a id="bd">&larr; Pipeline</a>&ensp;/&ensp;<a data-ba="${esc(o.a)}">${o.a}</a>&ensp;/&ensp;${o.n}</div>
+<div class="dtr"><span class="dtt">${o.n}</span>${bg(o.bi,BC[o.bi]||"#97a2b0")} ${bg(o.pi+" Priority",PC[o.pi]||"#97a2b0")}<button class="del-opp" id="dO">Delete</button></div>
+<div class="sbar">${sb}</div><div class="tbs">${tb}</div></div><div style="flex:1;overflow-y:auto"><div class="dbd">${c}</div></div></div>`;
+}
+function ovw(o){const kd=o.kd||{};return`<div class="fg"><div class="crd"><div class="cdt">Opportunity Details</div>${fl("Account",`<strong style="font-size:14px">${o.a}</strong>`)}${fi("n","Opportunity Name",o.n)}${ft("d","Details",o.d,3)}<div class="fp">${fsl("tp","Type",o.tp,["RFP","RFQ","Budgetary","Estimate"])}${fsl("ct","Contract Type",o.ct,["Engineering","EPC","Hybrid","Design-Build"])}</div><div class="fp">${fi("sc","Scope Type",o.sc)}${fsl("of","Owner Office",o.of,["","Oakland","Mississauga","EPC"],["Unassigned","Oakland","Mississauga","EPC"])}</div></div><div class="crd"><div class="cdt">Commercial & Tracking</div><div class="fp">${fi("v","Estimated Value",o.v,"$0.00")}${fi("pr","Probability",o.pr,"50%")}</div><div class="fp">${fi("du","Quote Due Date",o.du)}${fsl("pi","Priority",o.pi,["High","Medium","Low"])}</div><div class="fp">${fsl("bi","Bid Status",o.bi,["New Prospect","Proposal","Submitted","Negotiation","Won","Lost"])}${fsl("st","Stage",o.st,ST)}</div><div style="margin-top:10px;border-top:1px solid var(--bdr2);padding-top:14px"><div class="cdt">Team Assignment</div><div class="fp">${fi("pm","Proposal Manager",o.pm)}${fi("tl","Technical Lead",o.tl)}</div><div class="fp">${fi("gm","General Manager",o.gm)}${fi("cl","Commercial Lead",o.cl)}</div></div></div><div class="crd fw"><div class="cdt">Key Dates</div><div class="f3">${fdt("kd.pStart","Proposal Start",kd.pStart)}${fdt("kd.pDue","Proposal Due",kd.pDue)}${fdt("kd.gng","Go/No-Go",kd.gng)}</div><div class="f3">${fdt("kd.kick","Kickoff",kd.kick)}${fdt("kd.subm","Submission",kd.subm)}${fdt("kd.expClose","Expected Close",kd.expClose)}</div></div><div class="crd fw"><div class="cdt">Latest Updates</div>${ft("up","",o.up,3,"Add latest updates...")}</div><div class="crd fw"><div class="cdt">Stage Date Tracking</div><table class="sd-t"><thead><tr><th style="width:180px">Stage</th><th>Start</th><th>Due</th><th>Completed</th></tr></thead><tbody>${ST.map(s=>{const sd=o.sd[s]||{start:"",due:"",done:""};return`<tr><td><div class="sd-s"><span class="sd-d" style="background:${SC[s]}"></span>${s}</div></td><td><input type="date" data-sd="${s}" data-sdf="start" value="${sd.start}"></td><td><input type="date" data-sd="${s}" data-sdf="due" value="${sd.due}"></td><td><input type="date" data-sd="${s}" data-sdf="done" value="${sd.done}"></td></tr>`;}).join("")}</tbody></table></div></div>`;}
+function wfl(o){const si=ST.indexOf(o.st);const gl={"Opportunity Intake":"Gate 0","Technical Review":"Gate 1","Go / No-Go":"Gate 1.5","Kickoff":"Gate 2","Proposal Development":"Gate 2","Internal Review":"Gate 2.5","Proposal Approval":"Gate 3","Submission":"Gate 3","Closeout":"Gate 4+"};let g="";ST.forEach((s,i)=>{const cu=o.st===s,pa=si>i,c=SC[s];g+=`<div class="gt ${cu?"cur":""} ${pa?"pst":""}"><div class="gn2" style="background:${pa||cu?c:"var(--bdr)"};color:${pa||cu?"#fff":"var(--t3)"}">${pa?"✓":i+1}</div><div><div class="gnm" style="color:${cu?"var(--t1)":"var(--t2)"}">${s}</div><div class="gsu">${gl[s]||""}</div></div>${cu?`<div style="margin-left:auto">${bg("CURRENT",c)}</div>`:""}</div>`;});return`<div><div class="cdt">Proposal Workflow</div>${g}</div>`;}
+function tsk(o){let r="";if(!o.tk.length)r=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:28px">No tasks yet.</td></tr>`;else o.tk.forEach(t=>{const sc=t.s==="Complete"?"var(--green)":t.s==="Blocked"?"var(--red)":t.s==="In Progress"?"var(--blue)":"var(--t3)";r+=`<tr><td>${t.n}</td><td style="color:var(--t2)">${t.o||"—"}</td><td>${bg(t.r,SC[t.r]||"#97a2b0")}</td><td style="font-family:'JetBrains Mono',monospace;font-size:12px">${t.d||"—"}</td><td>${bg(t.s,sc)}</td><td><button class="bsm" data-dt="${t.i}">&#128465;</button></td></tr>`;});return`<div><div class="tkb"><div class="cdt" style="margin:0;border:0;padding:0">Tasks</div><button class="ba" id="at">+ Add Task</button></div><div class="tw"><table><thead><tr>${["Task","Owner","Stage","Due","Status",""].map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${r}</tbody></table></div></div>`;}
+function nts(o){return`<div><div class="cdt">Notes & Risk Log</div>${ft("nt","",o.nt,18,"Notes, risks, clarifications...")}</div>`;}
+function fl(l,c){return`<div class="fi"><div class="flb">${l}</div>${c}</div>`;}
+function fi(k,l,v,p=""){return`<div class="fi">${l?`<div class="flb">${l}</div>`:""}<input data-f="${k}" value="${esc(v)}" placeholder="${p}"></div>`;}
+function fdt(k,l,v){return`<div class="fi"><div class="flb">${l}</div><input type="date" data-f="${k}" value="${v||""}"></div>`;}
+function ft(k,l,v,r,p=""){return`<div class="fi">${l?`<div class="flb">${l}</div>`:""}<textarea data-f="${k}" rows="${r}" placeholder="${p}">${esc(v)}</textarea></div>`;}
+function fsl(k,l,v,opts,lbls){return`<div class="fi"><div class="flb">${l}</div><select data-f="${k}">${opts.map((x,i)=>`<option value="${x}"${v===x?" selected":""}>${lbls?lbls[i]:x}</option>`).join("")}</select></div>`;}
+
+function bindAll(){
+document.querySelectorAll("[data-sv]").forEach(x=>x.addEventListener("click",()=>{X.v=x.dataset.sv;X.s=null;X.sel=null;R();}));
+document.querySelectorAll("[data-sa]").forEach(x=>x.addEventListener("click",()=>{X.v="account";X.sel=x.dataset.sa;X.s=null;R();}));
+document.querySelectorAll("[data-so]").forEach(x=>x.addEventListener("click",()=>{X.s=x.dataset.so;R();}));
+document.getElementById("bd")?.addEventListener("click",()=>{X.v="pipeline";X.s=null;R();});
+document.querySelectorAll("[data-ba]").forEach(x=>x.addEventListener("click",()=>{X.v="account";X.sel=x.dataset.ba;X.s=null;R();}));
+const qi=document.getElementById("qi");if(qi){qi.addEventListener("input",e=>{X.q=e.target.value;R();});qi.focus();qi.setSelectionRange(qi.value.length,qi.value.length);}
+document.getElementById("fss")?.addEventListener("change",e=>{X.fs=e.target.value;R();});
+document.getElementById("fos")?.addEventListener("change",e=>{X.fo=e.target.value;R();});
+document.getElementById("addA")?.addEventListener("click",()=>{const n=prompt("Account Name:");if(n&&n.trim()){accts.push(n.trim());X.v="account";X.sel=n.trim();X.s=null;R();}});
+document.getElementById("aAdd")?.addEventListener("click",()=>{const nm=prompt("Opportunity Name:");if(nm&&nm.trim()){D.push({id:uid(),a:X.sel,n:nm.trim(),d:"",tp:"RFP",ct:"Engineering",sc:"",of:"",v:"",pr:"",st:"Opportunity Intake",bi:"New Prospect",pi:"Medium",du:"",up:"",pm:"Jami",tl:"",gm:"",cl:"Laith",tk:[],nt:"",kd:{pStart:"",pDue:"",gng:"",kick:"",subm:"",expClose:""},sd:mkSD()});R();}});
+document.getElementById("aRen")?.addEventListener("click",()=>{const old=X.sel;const nw=prompt("Rename:",old);if(nw&&nw.trim()&&nw!==old){const nm=nw.trim();D.forEach(o=>{if(o.a===old)o.a=nm;});const i=accts.indexOf(old);if(i>=0)accts[i]=nm;X.sel=nm;R();}});
+document.getElementById("aDel")?.addEventListener("click",()=>{const a=X.sel;const c=D.filter(o=>o.a===a).length;if(c>0){if(!confirm(`Delete "${a}" and ${c} opportunities?`))return;D=D.filter(o=>o.a!==a);}else if(!confirm(`Delete "${a}"?`))return;accts=accts.filter(x=>x!==a);X.v="pipeline";X.s=null;X.sel=null;R();});
+document.getElementById("dO")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o&&confirm(`Delete "${o.n}"?`)){const a=o.a;D=D.filter(x=>x.id!==X.s);X.s=null;X.v="account";X.sel=a;R();}});
+document.querySelectorAll("[data-tb]").forEach(x=>x.addEventListener("click",()=>{X.ot=x.dataset.tb;R();}));
+document.querySelectorAll("[data-f]").forEach(el=>{const fn=()=>{const o=D.find(x=>x.id===X.s);if(!o)return;const k=el.dataset.f;if(k.startsWith("kd.")){if(!o.kd)o.kd={};o.kd[k.split(".")[1]]=el.value;}else o[k]=el.value;save();};el.addEventListener("change",fn);el.addEventListener("input",fn);});
+document.querySelectorAll("[data-sd]").forEach(el=>{el.addEventListener("change",()=>{const o=D.find(x=>x.id===X.s);if(!o)return;if(!o.sd)o.sd=mkSD();if(!o.sd[el.dataset.sd])o.sd[el.dataset.sd]={start:"",due:"",done:""};o.sd[el.dataset.sd][el.dataset.sdf]=el.value;save();});});
+document.getElementById("at")?.addEventListener("click",()=>{const o=D.find(x=>x.id===X.s);if(o){const nm=prompt("Task name:");if(nm){o.tk.push({i:"t"+Date.now(),n:nm,o:"",r:"Opportunity Intake",d:"",s:"Not Started"});R();}}});
+document.querySelectorAll("[data-dt]").forEach(x=>x.addEventListener("click",()=>{const o=D.find(x2=>x2.id===X.s);if(o){o.tk=o.tk.filter(t=>t.i!==x.dataset.dt);R();}}));
+document.getElementById("cP")?.addEventListener("click",()=>{X.cm--;if(X.cm<0){X.cm=11;X.cy--;}R();});
+document.getElementById("cN")?.addEventListener("click",()=>{X.cm++;if(X.cm>11){X.cm=0;X.cy++;}R();});
+document.getElementById("cT")?.addEventListener("click",()=>{X.cm=new Date().getMonth();X.cy=new Date().getFullYear();R();});
+document.getElementById("cf_o")?.addEventListener("change",e=>{X.cf_opp=e.target.value;R();});
+document.getElementById("cf_s")?.addEventListener("change",e=>{X.cf_st=e.target.value;R();});
+document.getElementById("cf_f")?.addEventListener("change",e=>{X.cf_of=e.target.value;R();});
+document.getElementById("cf_d")?.addEventListener("change",e=>{X.cf_dt=e.target.value;R();});
+document.querySelectorAll(".cal-e[data-so]").forEach(x=>x.addEventListener("click",ev=>{ev.stopPropagation();X.s=x.dataset.so;R();}));
+document.getElementById("rst")?.addEventListener("click",()=>{if(confirm("Reset all data? Cannot be undone.")){D=JSON.parse(JSON.stringify(SEED));accts=[...new Set(SEED.map(o=>o.a))];X={v:"pipeline",sel:null,s:null,ot:"overview",fs:"All",fo:"All",q:"",cm:new Date().getMonth(),cy:new Date().getFullYear(),cf_opp:"All",cf_st:"All",cf_of:"All",cf_dt:"All"};doSave();R();}});
+}
+R();
+
+</script></body></html>
